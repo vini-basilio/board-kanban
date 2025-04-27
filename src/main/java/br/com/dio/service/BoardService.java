@@ -18,12 +18,13 @@ public class BoardService {
 
         try {
             dao.insert(entity);
-            var colmuns = entity.getBoardColumn().stream().map(c -> {
+            var columns = entity.getBoardColumn().stream().map(c -> {
                 c.setBoard(entity);
                 return c;
             }).toList();
 
-            for (var c : colmuns) {
+            for (var c : columns) {
+
                 boardColumnDAO.insert(c);
             }
 

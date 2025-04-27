@@ -29,4 +29,19 @@ public class BoardQueryService {
 
         return Optional.empty();
     }
+    public void showBoardDetails(final Long id) throws SQLException {
+        var dao = new BoardDAO(connection);
+
+        var optional = dao.findById(id);
+        var boardColumnDAO = new BoardColumnDAO(connection);
+
+        if (optional.isPresent()) {
+            var entity = optional.get();
+
+            entity.setBoardColumn(boardColumnDAO.findByBoardId(entity.getId()));
+
+
+        }
+
+    }
 }

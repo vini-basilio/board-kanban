@@ -15,12 +15,7 @@ import java.sql.SQLException;
 
 import static br.com.dio.persistence.config.ConnectionConfig.getConnection;
 
-public class MigrationsStrategy {
-    public final Connection connection;
-
-    public MigrationsStrategy(Connection connection) {
-        this.connection = connection;
-    }
+public record MigrationsStrategy(Connection connection) {
 
     public void executeMigration() {
         var originalOut = System.out;
@@ -31,9 +26,9 @@ public class MigrationsStrategy {
                 System.setOut(new PrintStream(fos));
                 System.setErr(new PrintStream(fos));
                 try (var connection = getConnection();
-                        var jdbcConnection = new JdbcConnection(connection);
-                        Database database = DatabaseFactory.getInstance()
-                                .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+                     Database database = DatabaseFactory.getInstance()
+                             .findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
                 ) {
 
