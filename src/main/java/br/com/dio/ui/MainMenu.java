@@ -21,7 +21,7 @@ public class MainMenu {
         var option = -1;
 
         while (true) {
-            System.out.println("1 - Criar um card");
+            System.out.println("1 - Criar um novo board");
             System.out.println("2 - Selecionar um board existente");
             System.out.println("3 - Excluir um board");
             System.out.println("4 - Sair");
@@ -52,7 +52,7 @@ public class MainMenu {
         System.out.println("Informe o nome do seu board");
         entity.setName(scanner.next());
 
-        System.out.println("Seu board tera colunas alem das 3 padroes? Se sim, informe quantas, senão digite 0");
+        System.out.println("Seu board tera colunas alem das 3 padroes? Se sim, informe quantas, senao digite 0");
 
         var additionalColumns = scanner.nextInt();
 
@@ -79,7 +79,7 @@ public class MainMenu {
         var finalColumn = createColumn(finalColumnName, BoardColumnKindEnum.FINAL, additionalColumns + 1);
         columns.add(finalColumn);
 
-        System.out.println("informe o nome da coluna final do board");
+        System.out.println("informe o nome da coluna cancelamento do board");
 
         var cancelColumnName = scanner.next();
         var cancelColumn = createColumn(cancelColumnName, BoardColumnKindEnum.CANCEL, additionalColumns + 2);
@@ -103,7 +103,7 @@ public class MainMenu {
 
             optional.ifPresentOrElse(
                     b -> new BoardMenu(b).execute(),
-                    () -> System.out.printf("Não foi encontrado um board com id %s\n", id));
+                    () -> System.out.printf("Nao foi encontrado um board com id %s\n", id));
         }
     }
 
@@ -117,7 +117,7 @@ public class MainMenu {
             if (service.delete(id)) {
                 System.out.printf("O board %s foi excluido\n", id);
             } else {
-                System.out.printf("Não foi encontrado um board com id %s\n", id);
+                System.out.printf("Nao foi encontrado um board com id %s\n", id);
             }
         }
     }
