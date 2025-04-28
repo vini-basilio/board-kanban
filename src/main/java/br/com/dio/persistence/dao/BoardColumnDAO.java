@@ -4,13 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import br.com.dio.dto.BoardColumnDTO;
 import com.mysql.cj.jdbc.StatementImpl;
 
 import br.com.dio.persistence.entity.BoardColumnEntity;
 import br.com.dio.persistence.entity.BoardColumnKindEnum;
+import br.com.dio.persistence.entity.CardEntity;
 import lombok.RequiredArgsConstructor;
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 public class BoardColumnDAO {
@@ -31,6 +34,46 @@ public class BoardColumnDAO {
                 entity.setId(impl.getLastInsertID());
             }
             return entity;
+        }
+    }
+
+    public Optional<BoardColumnEntity> findById(final Long id) throws SQLException {
+        var sql = """
+                 SELECT bc.name,
+                        bc.kind,
+                        c.id,
+                        c.title,
+                        c.description
+                FROM BOARDS_COLUMN bc
+                INNER JOIN CARDS c
+                    ON c.board_column_id = bc.id
+                WHERE bc.id = ?
+                """;
+
+        try (var statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            statement.executeQuery();
+
+            var resultSet = statement.getResultSet();
+
+            if (resultSet.next()) {
+                var entity = new BoardColumnEntity();
+                entity.setName(resultSet.getString("name"));
+                entity.setKind(BoardColumnKindEnum.findByName(resultSet.getString("kind")));
+
+                var card = new CardEntity();
+                do {
+                    if (isNull(resultSet.getString("c.title"))) {
+                        break;
+                    }
+                    card.setId(resultSet.getLong("c.id"));
+                    card.setTitle(resultSet.getString("c.title"));
+                    card.setDescription(resultSet.getString("c.description"));
+                    entity.getCards().add(card);
+                } while (resultSet.next());
+                return Optional.of(entity);
+            }
+            return Optional.empty();
         }
     }
 
