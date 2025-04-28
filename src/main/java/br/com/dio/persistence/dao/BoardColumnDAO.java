@@ -57,21 +57,21 @@ public class BoardColumnDAO {
             return entities;
         }
     }
+
     public List<BoardColumnDTO> findByBoardIdWithDetails(final Long id) throws SQLException {
         var sql = """
-                    SELECT bc.id, 
-                           bc.name, 
-                           bc.`order`, 
-                           bc.kind,
-                    COUNT(
-                           SELECT c.id 
-                           FROM CARDS c 
-                           WHERE c.board_column_id = bc.id) 
-                           cards_amount
-                    FROM BOARDS_COLUMNS bc
-                    WHERE board_id = ? 
-                    ORDER BY `order`
-                  """;
+                  SELECT bc.id,
+                         bc.name,
+                         bc.kind,
+                  COUNT(
+                         SELECT c.id
+                         FROM CARDS c
+                         WHERE c.board_column_id = bc.id)
+                         cards_amount
+                  FROM BOARDS_COLUMNS bc
+                  WHERE board_id = ?
+                  ORDER BY `order`
+                """;
 
         List<BoardColumnDTO> dtos = new ArrayList<>();
 
@@ -85,10 +85,8 @@ public class BoardColumnDAO {
                 var dto = new BoardColumnDTO(
                         resultSet.getLong("bc.id"),
                         resultSet.getString("bc.name"),
-                        resultSet.getInt("bc.order"),
-                                BoardColumnKindEnum.findByName(resultSet.getString("bc.kind")),
-                        resultSet.getInt("cards_amount")
-                );
+                        BoardColumnKindEnum.findByName(resultSet.getString("bc.kind")),
+                        resultSet.getInt("cards_amount"));
 
                 dtos.add(dto);
             }

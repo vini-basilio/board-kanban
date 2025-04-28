@@ -1,8 +1,11 @@
 package br.com.dio.ui;
 
+import br.com.dio.persistence.config.ConnectionConfig;
 import br.com.dio.persistence.entity.BoardEntity;
+import br.com.dio.service.BoardQueryService;
 import lombok.AllArgsConstructor;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 @AllArgsConstructor
@@ -11,7 +14,9 @@ public class BoardMenu {
 
     private final BoardEntity entity;
 
-        public void execute() {
+    public void execute() {
+        try {
+
             System.out.printf("Bem vindo ao board %s, selecione a operação desejada\n", entity.getId());
             var option = -1;
             while (option != 9) {
@@ -40,7 +45,11 @@ public class BoardMenu {
                     default -> System.out.println("Opção inválida, informe uma opção do menu");
                 }
             }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println(0);
         }
+    }
 
     private void createCard() {
     }
@@ -57,7 +66,21 @@ public class BoardMenu {
     private void cancelCard() {
     }
 
-    private void showBoard() {
+    private void showBoard() throws SQLException {
+        try (var connection = ConnectionConfig.getConnection()) {
+            var optional = new BoardQueryService(connection).showBoardDetails(entity.getId());
+
+            optional.ifPresent(
+                    b -> {
+                        System.out.printf("Board [%s,%s]\n", b.id(), b.name());
+                        b.columns()
+                                .forEach(
+                                        c -> System.out.printf("Coluna [%s] tipo: [%s] tem %s cards\n",
+                                                c.name(),
+                                                c.kind(),
+                                                c.cardsAmount()));
+                    });
+        }
     }
 
     private void showColumn() {
